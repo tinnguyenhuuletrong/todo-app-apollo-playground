@@ -8,7 +8,6 @@ import { PubSub } from 'apollo-server-express'
 import express from 'express'
 import fs from 'fs'
 import http from 'http'
-import https from 'https'
 import { constructGraphQLServer } from './graphql'
 
 // Context
