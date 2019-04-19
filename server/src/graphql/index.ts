@@ -5,12 +5,12 @@ import {
 } from 'apollo-server-core/dist/types'
 import { ApolloServer, gql, IResolvers } from 'apollo-server-express'
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer'
+import { GraphQLSchema } from 'graphql'
 
 declare interface CreateGraphQlParams {
   subscriptions: Partial<SubscriptionServerOptions>
   context: ContextFunction<ExpressContext, Context>
-  rootResolver: IResolvers
-  schema: string
+  schema: GraphQLSchema
   others?: any
 }
 
@@ -18,16 +18,10 @@ function constructGraphQLServer({
   subscriptions,
   context,
   schema,
-  rootResolver = {},
   ...others
 }: CreateGraphQlParams): ApolloServer {
-  const typeDefs = gql`
-    ${schema}
-  `
   const server = new ApolloServer({
-    typeDefs,
-    resolvers: rootResolver,
-    rootValue: { _type: 'rootQueryObj' },
+    schema,
     context,
     subscriptions,
     ...others

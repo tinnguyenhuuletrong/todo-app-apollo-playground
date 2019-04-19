@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build:live",
-    "dev": "ts-node src/app.ts",
+    "dev": "ts-node --files src/app.ts",
     "build": "tsc -p .",
-    "watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/app.ts",
+    "watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' --files src/app.ts",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "author": "",
