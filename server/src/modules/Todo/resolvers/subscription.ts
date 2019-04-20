@@ -9,7 +9,6 @@ const listUpdated = {
       return pubsub.asyncIterator([EPubSubEvent.TODO_LIST_UPDATE])
     },
     (root, args, context, info) => {
-      console.log('List update ', root)
       const { listId } = args
       return listId ? root.listUpdated._id === listId : true
     }

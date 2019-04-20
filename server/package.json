@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build:live",
-    "dev": "ts-node --files src/app.ts",
+    "start": "npm run build && node _build/app.js",
     "build": "tsc -p .",
-    "watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' --files src/app.ts",
+    "watch": "nodemon",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "author": "",
@@ -33,6 +32,10 @@
     "ignore": [
       "_build/**"
     ],
+    "watch": [
+      "src/**/*.ts"
+    ],
+    "exec": "npm start",
     "delay": "1000"
   }
 }
