@@ -12,7 +12,12 @@
     "trailing-comma": false,
     "object-literal-sort-keys": false,
     "interface-name": false,
-    "ordered-imports": false
+    "ordered-imports": false,
+    "max-classes-per-file": false,
+    "curly": false,
+    "variable-name": {
+      "severity": "off"
+    }
   },
   "rulesDirectory": []
 }

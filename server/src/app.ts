@@ -7,6 +7,7 @@ import {
   ExpressContext,
   ApolloServer
 } from 'apollo-server-express/dist/ApolloServer'
+import WebSocket = require('ws')
 import { makeExecutableSchema } from 'graphql-tools'
 import { PubSub } from 'apollo-server-express'
 import express from 'express'
@@ -32,11 +33,23 @@ async function start() {
     })
   }
 
-  function createContextFunction(): ContextFunction<ExpressContext, Context> {
-    return ({ req }) => {
+  function createContextFunction(): ContextFunction<
+    ExpressContext & { connection: any },
+    Context
+  > {
+    return ({ req, connection }) => {
+      let type = 'http'
+      let others = {}
+      if (connection) {
+        type = 'ws'
+        const context = connection.context
+        others = context
+      }
       return {
+        type,
         pubsub,
-        authScope: []
+        authScope: [],
+        ...others
       }
     }
   }
@@ -44,9 +57,13 @@ async function start() {
   function createSubscriptionContext(): Partial<SubscriptionServerOptions> {
     return {
       onConnect: (connectionParams, webSocket, context) => {
-        return true
+        console.log('ws connect')
+        return {
+          webSocket
+        }
       },
       onDisconnect: (webSocket, context) => {
+        console.log('ws disconnect')
         return true
       }
     }
@@ -61,7 +78,7 @@ async function start() {
   }
 
   // Boot Modules
-  const ActiveModules = ['System']
+  const ActiveModules = ['System', 'Todo']
   for (const moduleName of ActiveModules) {
     const filePath = path.join(__dirname, 'modules', moduleName)
     const { boot } = await import(`${filePath}`)
@@ -72,7 +89,10 @@ async function start() {
   // Construct graphql server
   const graphqlServer = constructGraphQLServer({
     schema: createSchema(applicationContext),
-    context: createContextFunction(),
+    context: createContextFunction() as ContextFunction<
+      ExpressContext,
+      Context
+    >,
     subscriptions: createSubscriptionContext()
   })
 
