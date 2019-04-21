@@ -1,28 +1,43 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import { HashRouter as Router, withRouter } from 'react-router-dom'
+import { Header, Main, Footer } from './Component'
+import compose from 'lodash/flowRight'
+import './App.css'
+
+function withMockTodos(Component) {
+  const todos = [
+    {
+      id: 1,
+      text: 'fake1',
+      completed: false
+    },
+    {
+      id: 2,
+      text: 'fake2',
+      completed: true
+    }
+  ]
+  return props => <Component todos={todos} {...props} />
+}
+
+//----------------------------------------------------
+// Wrapper
+//----------------------------------------------------
+const WrapMain = compose([withRouter, withMockTodos])(Main)
+const WrapFooter = compose([withRouter, withMockTodos])(Footer)
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+      <Router>
+        <div className="todoapp">
+          <Header />
+          <WrapMain />
+          <WrapFooter />
+        </div>
+      </Router>
+    )
   }
 }
 
-export default App;
+export default App
