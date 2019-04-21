@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { HashRouter as Router, withRouter } from 'react-router-dom'
 import { Header, Main, Footer } from './Component'
 import compose from 'lodash/flowRight'
-import './App.css'
 
 function withMockTodos(Component) {
   const todos = [
