@@ -11,7 +11,7 @@ const Header = ({ onNewTodo }) => {
         onChange={({ target }) => setText(target.value)}
         onKeyPress={({ key }) => {
           if (key === 'Enter') {
-            onNewTodo && onNewTodo(text)
+            onNewTodo && onNewTodo({ text })
             setText('')
           }
         }}
@@ -22,55 +22,38 @@ const Header = ({ onNewTodo }) => {
   )
 }
 
-const Main = ({
-  todos,
-  completeAllTodos,
-  uncompleteAllTodos,
-  toggleTodo,
-  removeTodo,
-  location
-}) => {
+const Main = ({ todos, updateTodo, removeTodo, location }) => {
   return todos && todos.length ? (
     <section className="main">
-      <input
-        className="toggle-all"
-        type="checkbox"
-        onChange={() =>
-          todos.some(todo => todo.completed === false)
-            ? completeAllTodos()
-            : uncompleteAllTodos()
-        }
-        checked={false}
-      />
-      <label htmlFor="toggle-all">Mark all as complete</label>
       <ul className="todo-list">
         {todos
           .filter(todo => {
             if (location.pathname === '/completed') {
-              return todo.completed
+              return todo.status === 'done'
             }
             if (location.pathname === '/active') {
-              return !todo.completed
+              return todo.status === 'waiting'
             }
             return true
           })
           .map(todo => (
             <li
-              key={todo.id}
-              className={todo.completed ? 'completed' : undefined}
+              key={todo._id}
+              className={todo.status === 'done' ? 'completed' : undefined}
             >
               <div className="view">
                 <input
                   className="toggle"
-                  onChange={() =>
-                    toggleTodo({ id: todo.id, completed: !todo.completed })
-                  }
-                  checked={todo.completed}
+                  onChange={() => {
+                    const status = todo.status === 'done' ? 'WAITING' : 'DONE'
+                    updateTodo({ taskId: todo._id, status })
+                  }}
+                  checked={todo.status === 'done'}
                   type="checkbox"
                 />
-                <label>{todo.text}</label>
+                <label>{todo.title}</label>
                 <button
-                  onClick={() => removeTodo(todo.id)}
+                  onClick={() => removeTodo(todo._id)}
                   className="destroy"
                 />
               </div>
