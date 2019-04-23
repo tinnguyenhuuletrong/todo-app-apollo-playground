@@ -7,7 +7,6 @@ const Query = `
 enum ETaskStatus {
   WAITING,
   DONE,
-  DOING
 }
 
 type TodoList {

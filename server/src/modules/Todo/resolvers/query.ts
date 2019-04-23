@@ -5,7 +5,7 @@ async function todoList() {
 }
 
 async function todoListById(root: any, { listId }: { listId: string }) {
-  await TodoListDataSource.findById(listId)
+  return await TodoListDataSource.findById(listId)
 }
 
 export { todoList, todoListById }

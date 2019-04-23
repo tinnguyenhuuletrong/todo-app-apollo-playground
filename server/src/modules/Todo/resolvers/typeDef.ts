@@ -16,8 +16,7 @@ const TodoTask = {
 
 const ETaskStatus = {
   WAITING: ETodoTaskStatus.WAITING,
-  DONE: ETodoTaskStatus.DONE,
-  DOING: ETodoTaskStatus.DOING
+  DONE: ETodoTaskStatus.DONE
 }
 
 export { TodoList, TodoTask, ETaskStatus }
