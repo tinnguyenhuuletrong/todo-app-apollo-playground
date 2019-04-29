@@ -1,54 +1,18 @@
 import React, { Component } from 'react'
-import { HashRouter as Router, withRouter } from 'react-router-dom'
-import { Header, Main, Footer } from './Component'
-import compose from 'lodash/flowRight'
+import { HashRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { ApolloProvider } from 'react-apollo'
-import {
-  client,
-  withTodoGet,
-  withTodoAdd,
-  withTodoRemove,
-  withTodoUpdate
-} from './apollo-js'
-
-function withMockTodos(Component) {
-  const todos = [
-    {
-      _id: '1',
-      title: 'fake1',
-      status: 'waiting'
-    },
-    {
-      _id: '2',
-      title: 'fake2',
-      status: 'done'
-    }
-  ]
-  return props => <Component todos={todos} {...props} />
-}
-
-//----------------------------------------------------
-// Wrapper
-//----------------------------------------------------
-const WrapHeader = compose([withTodoAdd])(Header)
-const WrapMain = compose([
-  withRouter,
-  withTodoGet,
-  withTodoRemove,
-  withTodoUpdate
-])(Main)
-const WrapFooter = compose([withRouter, withTodoGet])(Footer)
+import { client } from './apollo-js'
+import PageList from './PageList'
 
 class App extends Component {
   render() {
     return (
       <Router>
         <ApolloProvider client={client}>
-          <div className="todoapp">
-            <WrapHeader id="1" />
-            <WrapMain id="1" />
-            <WrapFooter id="1" />
-          </div>
+          <Switch>
+            <Route path="/list/:listId" component={PageList} />
+            <Route component={() => <Redirect to="/list/1" />} />
+          </Switch>
         </ApolloProvider>
       </Router>
     )
