@@ -2,28 +2,13 @@ import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { Header, Main, Footer } from './components/PureComponent'
 import compose from 'lodash/flowRight'
+import { inject } from 'mobx-react'
 import {
   withTodoGet,
   withTodoAdd,
   withTodoRemove,
   withTodoUpdate
-} from './apollo-com'
-
-function withMockTodos(Component) {
-  const todos = [
-    {
-      _id: '1',
-      title: 'fake1',
-      status: 'waiting'
-    },
-    {
-      _id: '2',
-      title: 'fake2',
-      status: 'done'
-    }
-  ]
-  return props => <Component todos={todos} {...props} />
-}
+} from './apollo-mobx-store'
 
 //----------------------------------------------------
 // Wrapper
@@ -38,17 +23,21 @@ const WrapMain = compose([
 const WrapFooter = compose([withRouter, withTodoGet])(Footer)
 
 class PageList extends React.PureComponent {
-  render() {
-    const { match } = this.props
+  constructor(props) {
+    super(props)
+    const { match, appStore } = props
     const listId = match.params.listId || '1'
+    appStore.setId(listId)
+  }
+  render() {
     return (
       <div className="todoapp">
-        <WrapHeader id={listId} />
-        <WrapMain id={listId} />
-        <WrapFooter id={listId} />
+        <WrapHeader />
+        <WrapMain />
+        <WrapFooter />
       </div>
     )
   }
 }
 
-export default withRouter(PageList)
+export default inject('appStore')(withRouter(PageList))

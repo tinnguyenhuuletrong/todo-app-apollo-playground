@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { HashRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { ApolloProvider } from 'react-apollo'
 import { client } from './apollo-js'
+// import { client } from './apollo-com'
 import PageList from './PageList'
 
 class App extends Component {
