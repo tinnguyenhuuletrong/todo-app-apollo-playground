@@ -9,7 +9,7 @@ import {
   withTodoAdd,
   withTodoRemove,
   withTodoUpdate
-} from './apollo'
+} from './apollo-js'
 
 function withMockTodos(Component) {
   const todos = [
@@ -30,14 +30,14 @@ function withMockTodos(Component) {
 //----------------------------------------------------
 // Wrapper
 //----------------------------------------------------
-const WrapHeader = compose([withTodoAdd('1')])(Header)
+const WrapHeader = compose([withTodoAdd])(Header)
 const WrapMain = compose([
   withRouter,
-  withTodoGet('1'),
-  withTodoRemove('1'),
-  withTodoUpdate('1')
+  withTodoGet,
+  withTodoRemove,
+  withTodoUpdate
 ])(Main)
-const WrapFooter = compose([withRouter, withTodoGet('1')])(Footer)
+const WrapFooter = compose([withRouter, withTodoGet])(Footer)
 
 class App extends Component {
   render() {
@@ -45,9 +45,9 @@ class App extends Component {
       <Router>
         <ApolloProvider client={client}>
           <div className="todoapp">
-            <WrapHeader />
-            <WrapMain />
-            <WrapFooter />
+            <WrapHeader id="1" />
+            <WrapMain id="1" />
+            <WrapFooter id="1" />
           </div>
         </ApolloProvider>
       </Router>
