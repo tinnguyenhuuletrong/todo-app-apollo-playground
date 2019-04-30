@@ -30,7 +30,11 @@ class AppStore {
     this.id = id
   }
 
-  _todos = []
+  filter = 'all'
+  setFilter = filter => {
+    this.filter = filter
+  }
+
   get todos() {
     const { id } = this
     return graphqlMobx({
@@ -93,25 +97,26 @@ class AppStore {
 
 const MobxAppStore = decorate(AppStore, {
   id: observable,
+  filter: observable,
   todos: computed,
   onNewTodo: action,
   removeTodo: action,
-  updateTodo: action
+  updateTodo: action,
+  setFilter: action
 })
 const store = new MobxAppStore()
 
 const withTodoGet = Comp =>
   inject('appStore')(
-    observer(({ appStore, ...others }) => (
-      <Comp
-        todos={
-          (appStore.todos.data.todoListById &&
-            appStore.todos.data.todoListById.tasks) ||
-          []
-        }
-        {...others}
-      />
-    ))
+    observer(({ appStore, ...others }) => {
+      const { data } = appStore.todos
+      return (
+        <Comp
+          todos={(data.todoListById && data.todoListById.tasks) || []}
+          {...others}
+        />
+      )
+    })
   )
 const withTodoAdd = Comp =>
   inject('appStore')(
@@ -132,11 +137,23 @@ const withTodoUpdate = Comp =>
     ))
   )
 
+const withTodoViewFilter = Comp =>
+  inject('appStore')(
+    observer(({ appStore, ...others }) => (
+      <Comp
+        filter={appStore.filter}
+        setFilter={appStore.setFilter}
+        {...others}
+      />
+    ))
+  )
+
 export {
   client,
   store,
   withTodoGet,
   withTodoAdd,
   withTodoRemove,
-  withTodoUpdate
+  withTodoUpdate,
+  withTodoViewFilter
 }
