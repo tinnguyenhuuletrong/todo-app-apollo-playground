@@ -1,19 +1,42 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ApolloClient } from 'apollo-boost'
+import { split } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
+import { WebSocketLink } from 'apollo-link-ws'
 import { Query, Mutation } from 'react-apollo'
 import { InMemoryCache } from 'apollo-cache-inmemory'
+import { getMainDefinition } from 'apollo-utilities'
 import {
   getTodogql,
   createTodogql,
   removeTodogql,
-  updateTodogql
+  updateTodogql,
+  subscriptionListUpdate
 } from './_graph-query'
 
 const GRAPHQL_HOST = 'http://localhost:4000/graphql'
+const GRAPHQL_WS = 'ws://localhost:4000/graphql'
 
 const headers = {}
-const link = new HttpLink({ uri: GRAPHQL_HOST, headers })
+const httpLink = new HttpLink({ uri: GRAPHQL_HOST, headers })
+const wsLink = new WebSocketLink({
+  uri: GRAPHQL_WS,
+  options: {
+    reconnect: true
+  }
+})
+const link = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query)
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    )
+  },
+  wsLink,
+  httpLink
+)
+
 const cache = new InMemoryCache()
 
 const client = new ApolloClient({
@@ -23,17 +46,28 @@ const client = new ApolloClient({
 
 const withTodoGet = Comp => ({ id, ...others }) => (
   <Query query={getTodogql} variables={{ id }}>
-    {({ loading, error, data = {} }) =>
-      console.log(loading, error, data) && Boolean(loading | !error) ? (
-        <span />
-      ) : (
-        <Comp
-          id={id}
-          todos={(data.todoListById && data.todoListById.tasks) || []}
-          {...others}
-        />
-      )
-    }
+    {({ loading, error, data = {}, subscribeToMore }) => {
+      const WrapperComp = () => {
+        useEffect(
+          () =>
+            subscribeToMore({
+              document: subscriptionListUpdate,
+              variables: { listId: id }
+            }),
+          []
+        )
+        return Boolean(loading | error) ? (
+          <span />
+        ) : (
+          <Comp
+            id={id}
+            todos={(data.todoListById && data.todoListById.tasks) || []}
+            {...others}
+          />
+        )
+      }
+      return <WrapperComp />
+    }}
   </Query>
 )
 

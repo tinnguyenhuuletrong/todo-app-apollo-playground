@@ -37,3 +37,16 @@ export const updateTodogql = gql`
     }
   }
 `
+
+export const subscriptionListUpdate = gql`
+  subscription listChanged($listId: String!) {
+    listUpdated(listId: $listId) {
+      _id
+      tasks {
+        _id
+        status
+        title
+      }
+    }
+  }
+`
