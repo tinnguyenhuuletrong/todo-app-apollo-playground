@@ -62,14 +62,22 @@ async function deleteTask(
   _: any,
   args: {
     taskId: string
-  }
+  },
+  context: any
 ) {
   const { taskId } = args
+  const { pubsub } = context
+
   const taskIns = await TaskDataSource.findById(taskId)
   if (!taskIns) {
     throw new UserInputError('Invalid id')
   }
   await TaskDataSource.delete(taskId)
+  const listIns = await TodoListDataSource.findById(taskIns.listId)
+  if (listIns) {
+    pubsub.publish(EPubSubEvent.TODO_LIST_UPDATE, { listUpdated: listIns })
+  }
+
   return true
 }
 
