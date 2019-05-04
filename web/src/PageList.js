@@ -6,7 +6,8 @@ import {
   withTodoGet,
   withTodoAdd,
   withTodoRemove,
-  withTodoUpdate
+  withTodoUpdate,
+  withTodoViewFilter
 } from './apollo'
 
 function withMockTodos(Component) {
@@ -33,9 +34,12 @@ const WrapMain = compose([
   withRouter,
   withTodoGet,
   withTodoRemove,
-  withTodoUpdate
+  withTodoUpdate,
+  withTodoViewFilter
 ])(Main)
-const WrapFooter = compose([withRouter, withTodoGet])(Footer)
+const WrapFooter = compose([withRouter, withTodoGet, withTodoViewFilter])(
+  Footer
+)
 
 class PageList extends React.PureComponent {
   render() {

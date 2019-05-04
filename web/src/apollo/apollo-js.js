@@ -1,3 +1,4 @@
+import React from 'react'
 import { ApolloClient } from 'apollo-boost'
 import { split } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
@@ -10,7 +11,8 @@ import {
   createTodogql,
   removeTodogql,
   updateTodogql,
-  subscriptionListUpdate
+  subscriptionListUpdate,
+  localVisibilityFilter
 } from './_graph-query'
 
 const GRAPHQL_HOST = 'http://localhost:4000/graphql'
@@ -42,6 +44,15 @@ const client = new ApolloClient({
   link,
   cache
 })
+
+// Initialize cache data
+// cache.restore(...)
+cache.writeData({
+  data: {
+    visibilityFilter: 'all'
+  }
+})
+
 const withTodoGet = graphql(getTodogql, {
   options: props => ({
     variables: {
@@ -130,4 +141,24 @@ const withTodoUpdate = graphql(updateTodogql, {
   })
 })
 
-export { client, withTodoGet, withTodoAdd, withTodoRemove, withTodoUpdate }
+const withTodoViewFilter = graphql(localVisibilityFilter, {
+  options: {
+    fetchPolicy: 'cache-only'
+  },
+  props: ({ data: { visibilityFilter } }) => {
+    return {
+      filter: visibilityFilter,
+      setFilter: filter =>
+        client.writeData({ data: { visibilityFilter: filter } })
+    }
+  }
+})
+
+export {
+  client,
+  withTodoGet,
+  withTodoAdd,
+  withTodoRemove,
+  withTodoUpdate,
+  withTodoViewFilter
+}

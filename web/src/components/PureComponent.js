@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 
 const Header = ({ onNewTodo }) => {
   const [text, setText] = useState('')
@@ -22,16 +21,16 @@ const Header = ({ onNewTodo }) => {
   )
 }
 
-const Main = ({ todos, updateTodo, removeTodo, location }) => {
+const Main = ({ todos, updateTodo, removeTodo, filter }) => {
   return todos && todos.length ? (
     <section className="main">
       <ul className="todo-list">
         {todos
           .filter(todo => {
-            if (location.pathname === '/completed') {
+            if (filter === 'completed') {
               return todo.status === 'done'
             }
-            if (location.pathname === '/active') {
+            if (filter === 'active') {
               return todo.status === 'waiting'
             }
             return true
@@ -65,7 +64,7 @@ const Main = ({ todos, updateTodo, removeTodo, location }) => {
   ) : null
 }
 
-const Footer = ({ todos, location }) => {
+const Footer = ({ todos, filter, setFilter }) => {
   return todos && todos.length ? (
     <footer className="footer">
       <span className="todo-count">
@@ -73,30 +72,28 @@ const Footer = ({ todos, location }) => {
       </span>
       <ul className="filters">
         <li>
-          <Link
-            className={location.pathname === '/' ? 'selected' : undefined}
-            to="/"
+          <span
+            className={filter === 'all' ? 'selected' : undefined}
+            onClick={e => setFilter('all')}
           >
             All
-          </Link>
+          </span>
         </li>
         <li>
-          <Link
-            className={location.pathname === '/active' ? 'selected' : undefined}
-            to="/active"
+          <span
+            className={filter === 'active' ? 'selected' : undefined}
+            onClick={e => setFilter('active')}
           >
             Active
-          </Link>
+          </span>
         </li>
         <li>
-          <Link
-            className={
-              location.pathname === '/completed' ? 'completed' : undefined
-            }
-            to="/completed"
+          <span
+            className={filter === 'completed' ? 'selected' : undefined}
+            onClick={e => setFilter('completed')}
           >
             Completed
-          </Link>
+          </span>
         </li>
       </ul>
       <button className="clear-completed">Clear completed</button>

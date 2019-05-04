@@ -11,7 +11,8 @@ import {
   createTodogql,
   removeTodogql,
   updateTodogql,
-  subscriptionListUpdate
+  subscriptionListUpdate,
+  localVisibilityFilter
 } from './_graph-query'
 
 const GRAPHQL_HOST = 'http://localhost:4000/graphql'
@@ -42,6 +43,14 @@ const cache = new InMemoryCache()
 const client = new ApolloClient({
   link,
   cache
+})
+
+// Initialize cache data
+// cache.restore(...)
+cache.writeData({
+  data: {
+    visibilityFilter: 'all'
+  }
 })
 
 const withTodoGet = Comp => ({ id, ...others }) => (
@@ -140,4 +149,25 @@ const withTodoUpdate = Comp => ({ id, ...others }) => (
   </Mutation>
 )
 
-export { client, withTodoGet, withTodoAdd, withTodoRemove, withTodoUpdate }
+const withTodoViewFilter = Comp => ({ ...others }) => (
+  <Query query={localVisibilityFilter} fetchPolicy="cache-only">
+    {({ loading, error, data = {}, subscribeToMore }) => (
+      <Comp
+        filter={data.visibilityFilter}
+        setFilter={filter =>
+          client.writeData({ data: { visibilityFilter: filter } })
+        }
+        {...others}
+      />
+    )}
+  </Query>
+)
+
+export {
+  client,
+  withTodoGet,
+  withTodoAdd,
+  withTodoRemove,
+  withTodoUpdate,
+  withTodoViewFilter
+}

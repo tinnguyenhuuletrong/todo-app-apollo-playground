@@ -50,3 +50,8 @@ export const subscriptionListUpdate = gql`
     }
   }
 `
+export const localVisibilityFilter = gql`
+  {
+    visibilityFilter @client
+  }
+`
