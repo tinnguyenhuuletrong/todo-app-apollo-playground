@@ -7,7 +7,7 @@ import {
   withTodoAdd,
   withTodoRemove,
   withTodoUpdate
-} from './apollo-com'
+} from './apollo'
 
 function withMockTodos(Component) {
   const todos = [
