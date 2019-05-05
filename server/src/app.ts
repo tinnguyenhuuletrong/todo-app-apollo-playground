@@ -15,15 +15,16 @@ import path from 'path'
 import http from 'http'
 import { constructGraphQLServer } from './graphql'
 import { GraphQLSchema } from 'graphql'
+import { ReplModule } from './utils'
+import { say, colorize } from './utils/cli-repl'
 
 // Express app
 const app = express()
+const pubsub = new PubSub()
+
 start()
 
 async function start() {
-  // Context
-  const pubsub = new PubSub()
-
   function createSchema({
     graphql: { Typedefs, Resolvers, Query }
   }: ApplicationBootContext): GraphQLSchema {
@@ -57,13 +58,11 @@ async function start() {
   function createSubscriptionContext(): Partial<SubscriptionServerOptions> {
     return {
       onConnect: (connectionParams, webSocket, context) => {
-        console.log('ws connect')
         return {
           webSocket
         }
       },
       onDisconnect: (webSocket, context) => {
-        console.log('ws disconnect')
         return true
       }
     }
@@ -119,4 +118,34 @@ function startServer(graphqlServer: ApolloServer) {
       }`
     )
   )
+
+  initRepl(server)
+}
+
+function initRepl(server: any) {
+  const sayDoc = say(`
+  The context has the following modules available:
+    * ${colorize('green', 'app')}: Express server.
+    * ${colorize('green', 'pubsub')}: Pubsub service.
+  `)
+
+  ReplModule.boot({
+    onExit: () => {
+      server.close()
+    },
+    commands: {
+      doc: {
+        help: 'Get information about the loaded modules',
+        action() {
+          this.clearBufferedCommand()
+          sayDoc()
+          this.displayPrompt()
+        }
+      }
+    },
+    externalContext: {
+      app,
+      pubsub
+    }
+  })
 }

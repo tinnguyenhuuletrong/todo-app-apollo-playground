@@ -1,23 +1,24 @@
 import { PubSubEngine } from 'graphql-subscriptions'
+import { gql } from 'apollo-server-core'
 
-const Query = `
-type HealthCheckResponse {
-  status: String
-  upTimeSec: Int
-}
+const Query = gql`
+  type HealthCheckResponse {
+    status: String
+    upTimeSec: Int
+  }
 
-type Query {
-  ping: String
-  healthCheck: HealthCheckResponse
-}
+  type Query {
+    ping: String
+    healthCheck: HealthCheckResponse
+  }
 
-type Mutation {
-  ping: String
-}
+  type Mutation {
+    ping: String
+  }
 
-type Subscription {
-  ping: String
-}
+  type Subscription {
+    ping: String
+  }
 `
 const Resolvers = {
   Query: {

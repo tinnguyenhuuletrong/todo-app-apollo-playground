@@ -17,7 +17,8 @@
     "curly": false,
     "variable-name": {
       "severity": "off"
-    }
+    },
+    "no-unused-expression": false
   },
   "rulesDirectory": []
 }
